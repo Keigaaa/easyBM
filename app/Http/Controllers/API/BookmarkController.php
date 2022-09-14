@@ -80,6 +80,6 @@ class BookmarkController extends BaseController
     public function destroy(Bookmark $bookmark)
     {
         $bookmark->delete();
-        return $this->sendResponse(BookmarkResource::collection($bookmark), 'Bookmark deleted successfully');
+        return $this->sendResponse(null, 'Bookmark deleted successfully');
     }
 }

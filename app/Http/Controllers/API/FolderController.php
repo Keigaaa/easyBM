@@ -16,8 +16,8 @@ class FolderController extends BaseController
      */
     public function index()
     {
-        $dossier = Folder::all();
-        return $this->sendResponse(FolderResource::collection($dossier), 'Dossier retrieved successfully');
+        $folder = Folder::all();
+        return $this->sendResponse(FolderResource::collection($folder), 'Folder retrieved successfully');
     }
 
     /**
@@ -28,7 +28,10 @@ class FolderController extends BaseController
      */
     public function store(Request $request)
     {
-        //
+        $folder = new Folder();
+        $folder->name = $request->name;
+        $folder->save();
+        return $this->sendResponse(new FolderResource($folder), 'Folder created successfully');
     }
 
     /**
@@ -37,9 +40,10 @@ class FolderController extends BaseController
      * @param  \App\Models\Folder  $folder
      * @return \Illuminate\Http\Response
      */
-    public function show(Folder $folder)
+    public function show($id)
     {
-        //
+        $folder = Folder::findOrFail($id);
+        return $this->sendResponse(new FolderResource($folder), 'Folder showed successfully');
     }
 
     /**
@@ -51,7 +55,18 @@ class FolderController extends BaseController
      */
     public function update(Request $request, Folder $folder)
     {
-        //
+        $input = $request->all();
+        if (isset($input['name'])) {
+            $folder->name = $request->name;
+        }
+        if (isset($input['url'])) {
+            $folder->url = $request->url;
+        }
+        if (isset($input['commentary'])) {
+            $folder->commentary = $request->commentary;
+        }
+        $folder->save();
+        return $this->sendResponse(new FolderResource($folder), 'Folder updated successfully');
     }
 
     /**
@@ -62,6 +77,7 @@ class FolderController extends BaseController
      */
     public function destroy(Folder $folder)
     {
-        //
+        $folder->delete();
+        return $this->sendResponse(null, 'Folder deleted successfully');
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\FolderController;
 use App\Http\Controllers\API\BookmarkController;
 use App\Http\Controllers\API\RegisterController;
 use Illuminate\Http\Request;
@@ -16,8 +17,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::resources([
+Route::apiresources([
     'bookmark' => BookmarkController::class,
+]);
+
+Route::apiresources([
+    'folder' => FolderController::class,
 ]);
 
 Route::controller(RegisterController::class)->group(function () {
@@ -28,3 +33,5 @@ Route::controller(RegisterController::class)->group(function () {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// TODO regrouper les routes dans le middleware
