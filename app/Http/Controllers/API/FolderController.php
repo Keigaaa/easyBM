@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\FolderResource;
 use App\Models\Folder;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,8 @@ class FolderController extends BaseController
      */
     public function index()
     {
-        //
+        $dossier = Folder::all();
+        return $this->sendResponse(FolderResource::collection($dossier), 'Dossier retrieved successfully');
     }
 
     /**

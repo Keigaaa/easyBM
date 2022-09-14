@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\BookmarkController;
 use App\Http\Controllers\API\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,10 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+Route::resources([
+    'bookmark' => BookmarkController::class,
+]);
 
 Route::controller(RegisterController::class)->group(function () {
     Route::post('register', 'register');

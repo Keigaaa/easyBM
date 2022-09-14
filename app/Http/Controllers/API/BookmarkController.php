@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\BookmarkResource;
 use App\Models\Bookmark;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,8 @@ class BookmarkController extends BaseController
      */
     public function index()
     {
-        //
+        $bookmark = Bookmark::all(); // TODO ajouter la gate pour retourner que ceux que le user peut voir
+        return $this->sendResponse(BookmarkResource::collection($bookmark), 'Bookmark retrieved successfully');
     }
 
     /**
@@ -26,7 +28,12 @@ class BookmarkController extends BaseController
      */
     public function store(Request $request)
     {
-        //
+        $bookmark = new Bookmark();
+        $bookmark->name = $request->name;
+        $bookmark->url = $request->url;
+        $bookmark->commentary = $request->commentary;
+        $bookmark->save();
+        return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark created successfully');
     }
 
     /**
@@ -35,9 +42,10 @@ class BookmarkController extends BaseController
      * @param  \App\Models\Bookmark  $bookmark
      * @return \Illuminate\Http\Response
      */
-    public function show(Bookmark $bookmark)
+    public function show($id)
     {
-        //
+        $bookmark = Bookmark::findOrFail($id);
+        return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark showed successfully');
     }
 
     /**
@@ -49,7 +57,18 @@ class BookmarkController extends BaseController
      */
     public function update(Request $request, Bookmark $bookmark)
     {
-        //
+        $input = $request->all();
+        if (isset($input['name'])) {
+            $bookmark->name = $request->name;
+        }
+        if (isset($input['url'])) {
+            $bookmark->url = $request->url;
+        }
+        if (isset($input['commentary'])) {
+            $bookmark->commentary = $request->commentary;
+        }
+        $bookmark->save();
+        return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark updated successfully');
     }
 
     /**
@@ -60,6 +79,7 @@ class BookmarkController extends BaseController
      */
     public function destroy(Bookmark $bookmark)
     {
-        //
+        $bookmark->delete();
+        return $this->sendResponse(BookmarkResource::collection($bookmark), 'Bookmark deleted successfully');
     }
 }
