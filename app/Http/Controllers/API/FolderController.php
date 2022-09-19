@@ -30,6 +30,7 @@ class FolderController extends BaseController
     {
         $folder = new Folder();
         $folder->name = $request->name;
+        $folder->idParent = $request->idParent;
         $folder->save();
         return $this->sendResponse(new FolderResource($folder), 'Folder created successfully');
     }

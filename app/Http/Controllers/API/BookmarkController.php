@@ -32,6 +32,7 @@ class BookmarkController extends BaseController
         $bookmark->name = $request->name;
         $bookmark->url = $request->url;
         $bookmark->commentary = $request->commentary;
+        $bookmark->idFolder = $request->idFolder;
         $bookmark->save();
         return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark created successfully');
     }

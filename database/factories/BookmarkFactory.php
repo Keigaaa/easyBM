@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Folder>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Bookmark>
  */
-class FolderFactory extends Factory
+class BookmarkFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,9 @@ class FolderFactory extends Factory
     public function definition()
     {
         return [
-            'name' => fake()->words(2, true),
+            'name' => fake()->name(),
+            'url' => fake()->url(),
+            'commentary' => fake()->word(10, true)
         ];
     }
 }
