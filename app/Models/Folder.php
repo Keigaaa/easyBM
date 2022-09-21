@@ -35,4 +35,9 @@ class Folder extends Model
     {
         return $this->belongsTo(Folder::class, 'idParent');
     }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'idOwner');
+    }
 }

@@ -5,7 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\FolderResource;
 use App\Models\Folder;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class FolderController extends BaseController
 {
@@ -29,6 +31,7 @@ class FolderController extends BaseController
     public function store(Request $request)
     {
         $folder = new Folder();
+        $folder->owner()->associate(Auth::user());
         $folder->name = $request->name;
         $folder->idParent = $request->idParent;
         $folder->save();

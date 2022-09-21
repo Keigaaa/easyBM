@@ -6,6 +6,7 @@ namespace Database\Seeders;
 
 use App\Models\Folder;
 use App\Models\Bookmark;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -23,6 +24,9 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        Folder::factory()->count(10)->has(Folder::factory()->count(2, 'folders')->hasBookmarks(5))->hasBookmarks(5)->create();
+        // TODO seeder with a for who create some users with folders and bookmarks
+        Folder::factory()->count(10)->create([
+            'idOwner' => 1
+        ]);
     }
 }
