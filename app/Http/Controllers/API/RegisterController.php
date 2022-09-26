@@ -46,7 +46,7 @@ class RegisterController extends BaseController
              * @var $user
              */
             $user = Auth::user();
-            $success['token'] =  $user->createToken('MyApp')->plainTextToken; // TODO Change the name of the App
+            $success['token'] =  $user->createToken('easyBM')->plainTextToken;
             $success['name'] =  $user->name;
             return $this->sendResponse($success, 'User login successfully.');
         } else {

@@ -8,6 +8,7 @@ use App\Models\Folder;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class FolderController extends BaseController
 {
@@ -18,7 +19,7 @@ class FolderController extends BaseController
      */
     public function index()
     {
-        $folder = Folder::all();
+        $folder = Folder::where('idOwner', '=', Auth::user()->id)->get();
         return $this->sendResponse(FolderResource::collection($folder), 'Folder retrieved successfully');
     }
 
@@ -47,7 +48,12 @@ class FolderController extends BaseController
     public function show($id)
     {
         $folder = Folder::findOrFail($id);
-        return $this->sendResponse(new FolderResource($folder), 'Folder showed successfully');
+        if (!Gate::allows('folder_owned', $folder)) {
+            return $this->sendError(null, 'Unauthorized resource.', 403);
+        } else {
+            $folder = Folder::findOrFail($id);
+            return $this->sendResponse(new FolderResource($folder), 'Folder showed successfully');
+        }
     }
 
     /**
@@ -59,18 +65,22 @@ class FolderController extends BaseController
      */
     public function update(Request $request, Folder $folder)
     {
-        $input = $request->all();
-        if (isset($input['name'])) {
-            $folder->name = $request->name;
+        if (!Gate::allows('folder_owned', $request, $folder)) {
+            return $this->sendError(null, 'Unauthorized resource.', 403);
+        } else {
+            $input = $request->all();
+            if (isset($input['name'])) {
+                $folder->name = $request->name;
+            }
+            if (isset($input['url'])) {
+                $folder->url = $request->url;
+            }
+            if (isset($input['commentary'])) {
+                $folder->commentary = $request->commentary;
+            }
+            $folder->save();
+            return $this->sendResponse(new FolderResource($folder), 'Folder updated successfully');
         }
-        if (isset($input['url'])) {
-            $folder->url = $request->url;
-        }
-        if (isset($input['commentary'])) {
-            $folder->commentary = $request->commentary;
-        }
-        $folder->save();
-        return $this->sendResponse(new FolderResource($folder), 'Folder updated successfully');
     }
 
     /**
@@ -81,7 +91,11 @@ class FolderController extends BaseController
      */
     public function destroy(Folder $folder)
     {
-        $folder->delete();
-        return $this->sendResponse(null, 'Folder deleted successfully');
+        if (!Gate::allows('folder_owned', $folder)) {
+            return $this->sendError(null, 'Unauthorized resource.', 403);
+        } else {
+            $folder->delete();
+            return $this->sendResponse(null, 'Folder deleted successfully');
+        }
     }
 }

@@ -17,14 +17,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::apiresources([
-    'bookmark' => BookmarkController::class,
-]);
-
-Route::apiresources([
-    'folder' => FolderController::class,
-]);
-
 Route::controller(RegisterController::class)->group(function () {
     Route::post('register', 'register');
     Route::post('login', 'login');
@@ -34,4 +26,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// TODO regrouper les routes dans le middleware
+Route::middleware('auth:sanctum')->group(function () {
+    Route::apiresources([
+        'bookmark' => BookmarkController::class,
+    ]);
+
+    Route::apiresources([
+        'folder' => FolderController::class,
+    ]);
+});
