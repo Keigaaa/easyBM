@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\FolderController;
 use App\Http\Controllers\API\BookmarkController;
 use App\Http\Controllers\API\RegisterController;
+use App\Http\Controllers\API\TagController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -33,5 +34,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiresources([
         'folder' => FolderController::class,
+    ]);
+
+    Route::apiresources([
+        'tag' => TagController::class,
     ]);
 });

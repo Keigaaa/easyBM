@@ -22,4 +22,9 @@ class Bookmark extends Model
     {
         return $this->belongsTo(User::class, 'idOwner');
     }
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
 }
