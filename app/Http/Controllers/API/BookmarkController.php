@@ -6,6 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\BookmarkResource;
 use App\Models\Bookmark;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Auth;
+
+use function Ramsey\Uuid\v1;
 
 class BookmarkController extends BaseController
 {
@@ -16,7 +20,7 @@ class BookmarkController extends BaseController
      */
     public function index()
     {
-        $bookmark = Bookmark::all(); // TODO ajouter la gate pour retourner que ceux que le user peut voir
+        $bookmark = Bookmark::where('idOwner', '=', Auth::user()->id)->get();
         return $this->sendResponse(BookmarkResource::collection($bookmark), 'Bookmark retrieved successfully');
     }
 
@@ -29,6 +33,7 @@ class BookmarkController extends BaseController
     public function store(Request $request)
     {
         $bookmark = new Bookmark();
+        $bookmark->owner()->associate(Auth::user());
         $bookmark->name = $request->name;
         $bookmark->url = $request->url;
         $bookmark->commentary = $request->commentary;
@@ -46,7 +51,11 @@ class BookmarkController extends BaseController
     public function show($id)
     {
         $bookmark = Bookmark::findOrFail($id);
-        return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark showed successfully');
+        if (!Gate::allows('bookmark_owned', $bookmark)) {
+            return $this->sendError(null, 'Unauthorized resource.', 403);
+        } else {
+            return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark showed successfully');
+        }
     }
 
     /**
@@ -58,18 +67,22 @@ class BookmarkController extends BaseController
      */
     public function update(Request $request, Bookmark $bookmark)
     {
-        $input = $request->all();
-        if (isset($input['name'])) {
-            $bookmark->name = $request->name;
+        if (!Gate::allows('bookmark_owned', $bookmark)) {
+            return $this->sendError(null, 'Unauthorized resource.', 403);
+        } else {
+            $input = $request->all();
+            if (isset($input['name'])) {
+                $bookmark->name = $request->name;
+            }
+            if (isset($input['url'])) {
+                $bookmark->url = $request->url;
+            }
+            if (isset($input['commentary'])) {
+                $bookmark->commentary = $request->commentary;
+            }
+            $bookmark->save();
+            return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark updated successfully');
         }
-        if (isset($input['url'])) {
-            $bookmark->url = $request->url;
-        }
-        if (isset($input['commentary'])) {
-            $bookmark->commentary = $request->commentary;
-        }
-        $bookmark->save();
-        return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark updated successfully');
     }
 
     /**
@@ -80,7 +93,11 @@ class BookmarkController extends BaseController
      */
     public function destroy(Bookmark $bookmark)
     {
-        $bookmark->delete();
-        return $this->sendResponse(null, 'Bookmark deleted successfully');
+        if (!Gate::allows('bookmark_owned', $bookmark)) {
+            return $this->sendError(null, 'Unauthorized resource.', 403);
+        } else {
+            $bookmark->delete();
+            return $this->sendResponse(null, 'Bookmark deleted successfully');
+        }
     }
 }

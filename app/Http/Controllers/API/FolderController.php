@@ -65,7 +65,7 @@ class FolderController extends BaseController
      */
     public function update(Request $request, Folder $folder)
     {
-        if (!Gate::allows('folder_owned', $request, $folder)) {
+        if (!Gate::allows('folder_owned', $folder)) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
         } else {
             $input = $request->all();

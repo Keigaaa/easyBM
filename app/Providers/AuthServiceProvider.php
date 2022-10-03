@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\Folder;
+use App\Models\Bookmark;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use App\Models\User;
@@ -29,6 +30,10 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('folder_owned', function (User $user, Folder $folder) {
             return $user->id == $folder->idOwner;
+        });
+
+        Gate::define('bookmark_owned', function (User $user, Bookmark $bookmark) {
+            return $user->id == $bookmark->idOwner;
         });
     }
 }
