@@ -17,7 +17,7 @@ class TagController extends BaseController
         $tag->name = $request->name;
         $folder->tags()->save($tag);
         return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
-        // gate 
+        /// TODO gate for search function
         // bookmark or folder if
         // si il existe ou pas
     }
