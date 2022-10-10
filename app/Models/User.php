@@ -41,4 +41,15 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public static function create($attributes)
+    {
+        $model = static::query()->create($attributes);
+
+        $folder = new Folder();
+        $folder->name = "root";
+        $folder->idOwner = $model->id;
+        $folder->save();
+        return $model;
+    }
 }
