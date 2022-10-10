@@ -13,11 +13,9 @@ class TagController extends BaseController
 {
     public function store(Request $request)
     {
-        $user = Auth::User();
+        $user = Auth::user();
         $name = $request->name;
-
-        Tag::alreadyExist($user, $name);
-
+        dd(Tag::alreadyExist($user, $name));
         if ((isset($request->folder_id)) && (isset($request->bookmark_id))) {
             return $this->sendError(null, 'Bad request.', 400);
         };
@@ -38,6 +36,5 @@ class TagController extends BaseController
         } else {
             return $this->sendError(null, 'Bad request.', 400);
         }
-        // si il existe ou pas
     }
 }

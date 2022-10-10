@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('bookmarks', function (Blueprint $table) {
-            $table->foreignId('idOwner')->constrained('users');
+            $table->foreignId('idOwnerBookmark')->constrained('users');
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::create('bookmarks', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('idOwner');
+            $table->dropConstrainedForeignId('idOwnerBookmark');
         });
     }
 };

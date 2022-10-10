@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('folders', function (Blueprint $table) {
-            $table->foreignId('idOwner')->constrained('users');
+            $table->foreignId('idOwnerFolder')->constrained('users');
         });
     }
 
@@ -26,7 +26,7 @@ return new class extends Migration
     public function down()
     {
         Schema::create('folders', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('idOwner');
+            $table->dropConstrainedForeignId('idOwnerFolder');
         });
     }
 };

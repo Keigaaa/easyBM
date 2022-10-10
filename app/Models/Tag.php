@@ -20,14 +20,20 @@ class Tag extends Model
         return $this->morphedByMany(Bookmark::class, 'taggable');
     }
 
-    public static function alreadyExist($name, $user)
+    public static function alreadyExist($user, $name)
     {
-        $names = DB::table('tags')->where('name', $name);
-        if (isset($names)) {
-            return true;
-        } else {
+        $tags = DB::table('users')
+            ->join('folders', 'idOwnerFolder', '=', 'users.id')
+            ->join('taggables', 'taggable_id', '=', 'folders.id')
+            ->join('tags', 'tags.id', '=', 'tag_id')
+            ->where('idOwnerFolder', '=', $user->id)
+            ->where('tags.name', '=', $name)
+            ->get();
+
+        if ($tags->isEmpty()) {
             return false;
+        } else {
+            return true;
         }
-        // link 
     }
 }

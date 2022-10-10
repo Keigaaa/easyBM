@@ -38,7 +38,7 @@ class Folder extends Model
 
     public function owner()
     {
-        return $this->belongsTo(User::class, 'idOwner');
+        return $this->belongsTo(User::class, 'idOwnerFolder');
     }
 
     public function tags()

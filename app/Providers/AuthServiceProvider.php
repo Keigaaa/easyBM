@@ -29,11 +29,11 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::define('folder_owned', function (User $user, Folder $folder) {
-            return $user->id == $folder->idOwner;
+            return $user->id == $folder->idOwnerFolder;
         });
 
         Gate::define('bookmark_owned', function (User $user, Bookmark $bookmark) {
-            return $user->id == $bookmark->idOwner;
+            return $user->id == $bookmark->idOwnerBookmark;
         });
     }
 }

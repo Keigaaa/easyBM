@@ -20,7 +20,7 @@ class Bookmark extends Model
 
     public function owner()
     {
-        return $this->belongsTo(User::class, 'idOwner');
+        return $this->belongsTo(User::class, 'idOwnerBookmark');
     }
 
     public function tags()

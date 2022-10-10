@@ -48,7 +48,7 @@ class User extends Authenticatable
 
         $folder = new Folder();
         $folder->name = "root";
-        $folder->idOwner = $model->id;
+        $folder->idOwnerFolder = $model->id;
         $folder->save();
         return $model;
     }
