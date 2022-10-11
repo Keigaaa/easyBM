@@ -22,18 +22,32 @@ class Tag extends Model
 
     public static function alreadyExist($user, $name)
     {
-        $tags = DB::table('users')
+        $folderTag = DB::table('users')
             ->join('folders', 'idOwnerFolder', '=', 'users.id')
+            ->join('bookmarks', 'idOwnerBookmark', '=', 'users.id')
             ->join('taggables', 'taggable_id', '=', 'folders.id')
             ->join('tags', 'tags.id', '=', 'tag_id')
             ->where('idOwnerFolder', '=', $user->id)
             ->where('tags.name', '=', $name)
+            ->select('tag_id')
             ->get();
 
-        if ($tags->isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return $folderTag;
     }
+
+    /*public static function tag_owned($user, $tag)
+    {
+        $userTag = DB::table('users')
+            ->join('folders', 'idOwnerFolder', '=', 'users.id')
+            ->join('taggables', 'taggable_id', '=', 'folders.id')
+            ->join('tags', 'tags.id', '=', 'tag_id')
+            ->where('idOwnerFolder', '=', $user->id)
+            ->where('tags.name', '=', $tag->name)
+            ->select('tag_id')
+            ->get();
+
+        return $userTag;
+
+        // casser l'associùation du tag dans taggable
+    }*/
 }
