@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\View;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,3 +23,7 @@ Route::get('home', function () {
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('admin/adminpage', [AdminController::class, 'adminpage'])->middleware('auth');
+
+Route::get('admin/listuser', [AdminController::class, 'listuser'])->middleware('auth');
