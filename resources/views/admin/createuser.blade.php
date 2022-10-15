@@ -2,7 +2,7 @@
 
 @section('content')
     <h1>Créer un utilisateur</h1>
-    <form method="POST" action="{{ route('postuser') }}">
+    <form method="POST" action="{{ route('postcreateuser') }}">
         @csrf
 
         <div>

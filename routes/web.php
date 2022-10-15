@@ -30,4 +30,8 @@ Route::get('admin/manageuser', [AdminController::class, 'listuser'])->middleware
 
 Route::get('admin/createuser/', [AdminController::class, 'createuser'])->middleware('auth')->name('createuser');
 
-Route::post('admin/createuser', [AdminController::class, 'postcreateuser'])->middleware('auth')->name('postuser');
+Route::post('admin/createuser', [AdminController::class, 'postcreateuser'])->middleware('auth')->name('postcreateuser');
+
+Route::get('admin/manageuser/{user}', [AdminController::class, 'adminuser'])->middleware('auth')->name('adminuser');
+
+Route::post('admin/manageuser/{user}', [AdminController::class, 'deleteuser'])->middleware('auth')->name('deleteuser');

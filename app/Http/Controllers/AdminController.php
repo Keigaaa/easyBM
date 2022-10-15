@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Folder;
 
 
 
@@ -20,7 +21,7 @@ class AdminController extends Controller
         if (Auth::user()->is_admin) {
             return view('admin/index');
         } else {
-            return "Vous devez être administrateur pour accéder à cette page";
+            return "Vous devez être administrateur pour accéder à cette page !";
         }
     }
 
@@ -30,7 +31,7 @@ class AdminController extends Controller
         if (Auth::user()->is_admin) {
             return view("admin/manageuser")->with('users', $users);
         } else {
-            return "Vous devez être administrateur pour accéder à cette page";
+            return "Vous devez être administrateur pour accéder à cette page !";
         }
     }
 
@@ -39,7 +40,7 @@ class AdminController extends Controller
         if (Auth::user()->is_admin) {
             return view("admin/createuser");
         } else {
-            return "Vous devez être administrateur pour accéder à cette page";
+            return "Vous devez être administrateur pour accéder à cette page !";
         }
     }
 
@@ -61,9 +62,36 @@ class AdminController extends Controller
             ])->validate();
 
             $user = User::create(['isadmin' => false, "name" => $input['name'], "email" => $input['email'], "password" => Hash::make($input['password'])]);
-            return redirect("admin/index");
+            return redirect("admin/manageuser");
         } else {
-            return "Vous devez être administrateur pour accéder à cette page";
+            return "Vous devez être administrateur pour accéder à cette page !";
+        }
+    }
+
+    public function deleteUser(User $user)
+    {
+        if (Auth::user()->is_admin) {
+            $folders = DB::table('folders')
+                ->where('idOwnerFolder', '=', $user->id)
+                ->delete();
+            $bookmarks = DB::table('bookmarks')
+                ->where('idOwnerBookmark', '=', $user->id)
+                ->delete();
+            $user->delete();
+            return redirect('admin/manageuser');
+        } else {
+            return "Vous devez être administrateur pour accéder à cette page !";
+        }
+    }
+
+    public function adminUser(User $user)
+    {
+        if (Auth::user()->is_admin) {
+            $user->is_admin = true;
+            $user->save();
+            return redirect('admin/manageuser');
+        } else {
+            return "Vous devez être administrateur pour accéder à cette page  !";
         }
     }
 }
