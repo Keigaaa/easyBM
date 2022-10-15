@@ -8,7 +8,7 @@
     <div>
         <p>Bonjour {{ auth()->user()->name }}, vous êtes bien connecté !</p>
         @if (auth()->user()->is_admin)
-            <p><a href="admin/adminpage">Acceder à la page d'administration</a></p>
+            <p><a href="{{ route('index') }}">Acceder à la page d'administration</a></p>
         @endif
         {{-- <p>Bonjour {{ Auth::user()->name }}, vous êtes bien connecté !</p> --}}
     </div>

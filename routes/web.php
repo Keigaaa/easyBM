@@ -24,6 +24,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('admin/adminpage', [AdminController::class, 'adminpage'])->middleware('auth');
+Route::get('admin/index', [AdminController::class, 'index'])->middleware('auth')->name('index');
 
-Route::get('admin/listuser', [AdminController::class, 'listuser'])->middleware('auth');
+Route::get('admin/manageuser', [AdminController::class, 'listuser'])->middleware('auth')->name('manage');
+
+Route::get('admin/createuser/', [AdminController::class, 'createuser'])->middleware('auth')->name('createuser');
+
+Route::post('admin/createuser', [AdminController::class, 'postcreateuser'])->middleware('auth')->name('postuser');
