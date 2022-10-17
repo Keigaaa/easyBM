@@ -9,7 +9,6 @@ class Folder extends Model
 {
     use HasFactory;
 
-    // protected $table = 'folders';
 
     public function bookmarks()
     {
