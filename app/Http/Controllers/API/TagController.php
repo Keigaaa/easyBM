@@ -8,6 +8,7 @@ use App\Models\Folder;
 use App\Models\Bookmark;
 use App\Http\Resources\TagResource;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class TagController extends BaseController
 {
@@ -16,6 +17,10 @@ class TagController extends BaseController
         //Recuperate the user actually register and the name of the tags in the request.
         $user = Auth::user();
         $name = $request->name;
+        //Recuperate the root folder for the current user
+        $root = DB::table('folders')
+            ->where('name', '=', 'root')
+            ->get();
         // If the request contain an id for folder and for bookmark, that send an error.
         if ((isset($request->folder_id)) && (isset($request->bookmark_id))) {
             return $this->sendError(null, 'Bad request.', 400);
@@ -25,7 +30,7 @@ class TagController extends BaseController
         //If the tag don't exist, create him.
         if ($tagExist->isEmpty()) {
             //For folder.
-            if (isset($request->folder_id)) {
+            if (isset($request->folder_id) && (!$root)) {
                 $input = $request->all();
                 $folder = Folder::findOrFail($input['folder_id']);
                 $tag = new Tag();
@@ -47,7 +52,7 @@ class TagController extends BaseController
             //If the tag exist, associate him to the folder or the bookmaek in the request.
         } else {
             //For folder.
-            if (isset($request->folder_id)) {
+            if (isset($request->folder_id) && (!$root)) {
                 $input = $request->all();
                 $folder = Folder::findOrFail($input['folder_id']);
                 $tag = Tag::findOrFail($tagExist->first()->tag_id);

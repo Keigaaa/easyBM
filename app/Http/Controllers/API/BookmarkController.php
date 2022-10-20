@@ -20,7 +20,7 @@ class BookmarkController extends BaseController
      */
     public function index()
     {
-        $bookmark = Bookmark::where('idOwner', '=', Auth::user()->id)->get();
+        $bookmark = Bookmark::where('idOwnerBookmark', '=', Auth::user()->id)->get();
         return $this->sendResponse(BookmarkResource::collection($bookmark), 'Bookmark retrieved successfully');
     }
 

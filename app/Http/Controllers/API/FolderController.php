@@ -19,7 +19,7 @@ class FolderController extends BaseController
      */
     public function index()
     {
-        $folder = Folder::where('idOwner', '=', Auth::user()->id)->get();
+        $folder = Folder::where('idOwnerFolder', '=', Auth::user()->id)->get();
         return $this->sendResponse(FolderResource::collection($folder), 'Folder retrieved successfully');
     }
 
@@ -65,18 +65,12 @@ class FolderController extends BaseController
      */
     public function update(Request $request, Folder $folder)
     {
-        if (!Gate::allows('folder_owned', $folder)) {
+        if (!Gate::allows('folder_owned', $folder) && ($folder->name == 'root')) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
         } else {
             $input = $request->all();
             if (isset($input['name'])) {
                 $folder->name = $request->name;
-            }
-            if (isset($input['url'])) {
-                $folder->url = $request->url;
-            }
-            if (isset($input['commentary'])) {
-                $folder->commentary = $request->commentary;
             }
             $folder->save();
             return $this->sendResponse(new FolderResource($folder), 'Folder updated successfully');
@@ -91,7 +85,7 @@ class FolderController extends BaseController
      */
     public function destroy(Folder $folder)
     {
-        if (!Gate::allows('folder_owned', $folder)) {
+        if (!Gate::allows('folder_owned', $folder) && ($folder->name == 'root')) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
         } else {
             $folder->delete();
