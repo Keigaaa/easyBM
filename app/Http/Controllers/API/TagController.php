@@ -12,66 +12,42 @@ use Illuminate\Support\Facades\DB;
 
 class TagController extends BaseController
 {
-    public function store(Request $request)
+
+    /**
+     * Vérifie si on a passé en paramètre les ID favoris et Bookmarks
+     *
+     * @param Request $request
+     * @return boolean
+     */
+    public function isDoubleIdError(Request $request)
     {
-        //Recuperate the user actually register and the name of the tags in the request.
-        $user = Auth::user();
-        $name = $request->name;
-        //Recuperate the root folder for the current user
-        $root = DB::table('folders')
-            ->where('name', '=', 'root')
-            ->get();
-        // If the request contain an id for folder and for bookmark, that send an error.
-        if ((isset($request->folder_id)) && (isset($request->bookmark_id))) {
+        return (isset($request->folder_id)) && (isset($request->bookmark_id));
+    }
+
+    public function storeForFolder(Request $request)
+    {
+        if (TagController::isDoubleIdError($request)) {
             return $this->sendError(null, 'Bad request.', 400);
         };
-        //Use the tag function "alreadyExist" to see if the tag who i want create exist or no.
-        $tagExist = Tag::alreadyExist($user, $name);
-        //If the tag don't exist, create him.
-        if ($tagExist->isEmpty()) {
-            //For folder.
-            if (isset($request->folder_id) && (!$root)) {
-                $input = $request->all();
-                $folder = Folder::findOrFail($input['folder_id']);
+
+        $folder = FolderController::getFolder($request);
+        $tag = Tag::existInFolder(Auth::user(), $request->name);
+
+        if (FolderController::getRoot($request) === 1) {
+            if (!$tag->isEmpty()) {
+                $tag = Tag::findOrFail($tag->first()->id); // TODO change code there (non sense)
+                $folder->tags()->save($tag);
+                return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
+            } elseif (FolderController::getFolder($request)) {
                 $tag = new Tag();
                 $tag->name = $request->name;
                 $folder->tags()->save($tag);
                 return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
-                //For bookmark.
-            } elseif (isset($request->bookmark_id)) {
-                $input = $request->all();
-                $bookmark = Bookmark::findOrFail($input['bookmark_id']);
-                $tag = new Tag();
-                $tag->name = $request->name;
-                $bookmark->tags()->save($tag);
-                return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
-                //If request don't receive id for bookmark or for folder, that return an error.
             } else {
                 return $this->sendError(null, 'Bad request.', 400);
             }
-            //If the tag exist, associate him to the folder or the bookmaek in the request.
         } else {
-            //For folder.
-            if (isset($request->folder_id) && (!$root)) {
-                $input = $request->all();
-                $folder = Folder::findOrFail($input['folder_id']);
-                $tag = Tag::findOrFail($tagExist->first()->tag_id);
-                $folder->tags()->save($tag);
-                return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
-                //For bookmark.
-            } elseif (isset($request->bookmark_id)) {
-                $input = $request->all();
-                $bookmark = Bookmark::findOrFail($input['bookmark_id']);
-                $tag = Tag::findOrFail($tagExist->first()->tag_id);
-                $bookmark->tags()->save($tag);
-                return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
-            }
+            return $this->sendError(null, 'Bad request.', 400);
         }
     }
-
-    /*public function destroy(Tag $tag)
-    {
-        $user = Auth::user();
-        dd(Tag::tag_owned($user, $tag));
-    }*/
 }

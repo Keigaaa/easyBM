@@ -100,4 +100,10 @@ class BookmarkController extends BaseController
             return $this->sendResponse(null, 'Bookmark deleted successfully');
         }
     }
+
+    static public function getBookmark(Request $request)
+    {
+        $bookmark = Bookmark::findOrFail($request->bookmark_id);
+        return $bookmark;
+    }
 }

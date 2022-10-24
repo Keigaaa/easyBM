@@ -20,20 +20,34 @@ class Tag extends Model
         return $this->morphedByMany(Bookmark::class, 'taggable');
     }
 
-    public static function alreadyExist($user, $name)
+    public static function existInFolder($user, $name)
     {
-        $folderTag = DB::table('users')
+        $existInFolder = DB::table('users')
             ->join('folders', 'idOwnerFolder', '=', 'users.id')
-            ->join('bookmarks', 'idOwnerBookmark', '=', 'users.id')
             ->join('taggables', 'taggable_id', '=', 'folders.id')
             ->join('tags', 'tags.id', '=', 'tag_id')
             ->where('idOwnerFolder', '=', $user->id)
             ->where('tags.name', '=', $name)
-            ->select('tag_id')
+            ->select('tags.id')
             ->get();
 
-        return $folderTag;
+        return $existInFolder;
     }
+
+    public static function existInBookmark($user, $name)
+    {
+        $existInBookmark = DB::table('users')
+            ->join('bookmarks', 'idOwnerBookmark', '=', 'users.id')
+            ->join('taggables', 'taggable_id', '=', 'folders.id')
+            ->join('tags', 'tags.id', '=', 'tag_id')
+            ->where('idOwnerBookmark', '=', $user->id)
+            ->where('tags.name', '=', $name)
+            ->select('tags.id')
+            ->get();
+
+        return $existInBookmark;
+    }
+}
 
     /*public static function tag_owned($user, $tag)
     {
@@ -50,4 +64,3 @@ class Tag extends Model
 
         // casser l'associùation du tag dans taggable
     }*/
-}

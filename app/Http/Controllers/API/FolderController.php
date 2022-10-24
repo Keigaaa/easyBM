@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\DB;
 
 class FolderController extends BaseController
 {
@@ -91,5 +92,19 @@ class FolderController extends BaseController
             $folder->delete();
             return $this->sendResponse(null, 'Folder deleted successfully');
         }
+    }
+
+    static public function getFolder(Request $request)
+    {
+        $folder = Folder::findOrFail($request->folder_id);
+        return $folder;
+    }
+
+    static public function getRoot()
+    {
+        $root = DB::table('folders')
+            ->where('name', '=', 'root')
+            ->get();
+        return $root->first()->id;
     }
 }
