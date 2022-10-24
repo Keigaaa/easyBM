@@ -10,16 +10,33 @@ class Tag extends Model
 {
     use HasFactory;
 
+    /**
+     * Returns the tags inside in a folder.
+     *
+     * @return morphedByMany
+     */
     public function folders()
     {
         return $this->morphedByMany(Folder::class, 'taggable');
     }
 
+    /**
+     * Returns the tags inside in a bookmark.
+     *
+     * @return morphedByMany
+     */
     public function bookmarks()
     {
         return $this->morphedByMany(Bookmark::class, 'taggable');
     }
 
+    /**
+     * Checks if a tag already exists in a folder with the same name and returns it.
+     *
+     * @param [User] $user
+     * @param [string] $name
+     * @return int
+     */
     public static function existInFolder($user, $name)
     {
         $existInFolder = DB::table('users')
@@ -34,6 +51,13 @@ class Tag extends Model
         return $existInFolder;
     }
 
+    /**
+     * Checks if a tag already exists in a bookmark with the same name and returns it.
+     *
+     * @param [User] $user
+     * @param [string] $name
+     * @return int
+     */
     public static function existInBookmark($user, $name)
     {
         $existInBookmark = DB::table('users')

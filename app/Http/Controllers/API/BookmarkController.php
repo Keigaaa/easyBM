@@ -9,8 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 
-use function Ramsey\Uuid\v1;
-
 class BookmarkController extends BaseController
 {
     /**
@@ -101,6 +99,12 @@ class BookmarkController extends BaseController
         }
     }
 
+    /**
+     * Returns the bookmark corresponding to the ID sent in the request.
+     *
+     * @param Request $request
+     * @return Bookmark
+     */
     static public function getBookmark(Request $request)
     {
         $bookmark = Bookmark::findOrFail($request->bookmark_id);

@@ -14,19 +14,25 @@ class TagController extends BaseController
 {
 
     /**
-     * Vérifie si on a passé en paramètre les ID favoris et Bookmarks
+     * Checks if bookmarks and folders IDs have been sent as parameters.
      *
      * @param Request $request
      * @return boolean
      */
-    public function isDoubleIdError(Request $request)
+    public function isDoubleId(Request $request)
     {
         return (isset($request->folder_id)) && (isset($request->bookmark_id));
     }
 
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function storeForFolder(Request $request)
     {
-        if (TagController::isDoubleIdError($request)) {
+        if (TagController::isDoubleId($request)) {
             return $this->sendError(null, 'Bad request.', 400);
         };
 
@@ -35,7 +41,7 @@ class TagController extends BaseController
 
         if (FolderController::getRoot($request) === 1) {
             if (!$tag->isEmpty()) {
-                $tag = Tag::findOrFail($tag->first()->id); // TODO change code there (non sense)
+                $tag = Tag::findOrFail($tag->first()->id);
                 $folder->tags()->save($tag);
                 return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
             } elseif (FolderController::getFolder($request)) {

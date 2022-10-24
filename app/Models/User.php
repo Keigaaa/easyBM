@@ -42,10 +42,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    /**
+     * Creates a root folder when a new user is created.
+     *
+     * @param [Folder] $attributes
+     * @return Folder
+     */
     public static function create($attributes)
     {
         $model = static::query()->create($attributes);
-
         $folder = new Folder();
         $folder->name = "root";
         $folder->idOwnerFolder = $model->id;

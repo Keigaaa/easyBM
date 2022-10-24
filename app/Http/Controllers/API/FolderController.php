@@ -94,13 +94,24 @@ class FolderController extends BaseController
         }
     }
 
+    /**
+     * Returns the folder corresponding to the ID sent in the request.
+     *
+     * @param Request $request
+     * @return Folder
+     */
     static public function getFolder(Request $request)
     {
         $folder = Folder::findOrFail($request->folder_id);
         return $folder;
     }
 
-    static public function getRoot()
+    /**
+     * Returns the root folder ID of the user sent in the request. 
+     *
+     * @return int
+     */
+    static public function getRoot(Request $request)
     {
         $root = DB::table('folders')
             ->where('name', '=', 'root')

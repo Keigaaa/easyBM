@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class BaseController extends Controller
 {
     /**
-     * success response method.
+     * Success response method.
      *
      * @return \Illuminate\Http\Response
      */
@@ -30,7 +30,7 @@ class BaseController extends Controller
     }
 
     /**
-     * return error response.
+     * Return error response.
      *
      * @return \Illuminate\Http\Response
      */

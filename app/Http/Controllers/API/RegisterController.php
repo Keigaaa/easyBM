@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class RegisterController extends BaseController
 {
     /**
-     * Register api
+     * Register api.
      *
      * @return \Illuminate\Http\Response
      */
@@ -35,7 +35,7 @@ class RegisterController extends BaseController
         return $this->sendResponse($success, 'User register successfully.');
     }
     /**
-     * Login api
+     * Login api.
      *
      * @return \Illuminate\Http\Response
      */
