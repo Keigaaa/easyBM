@@ -58,12 +58,9 @@ class TagController extends BaseController
                 $tag->name = $request->name;
                 $folder->tags()->save($tag);
                 return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
-            } else {
-                return $this->sendError(null, 'Bad request.', 400);
             }
-        } else {
-            return $this->sendError(null, 'Bad request.', 400);
         }
+        return $this->sendError(null, 'Bad request.', 400);
     }
 
     /**
@@ -77,7 +74,6 @@ class TagController extends BaseController
     {
         $bookmark = BookmarkController::getBookmark($request);
         $tag = Tag::existInBookmark(Auth::user(), $request->name);
-
         if (!$tag->isEmpty()) {
             $tag = Tag::findOrFail($tag->first()->id);
             $bookmark->tags()->save($tag);
@@ -104,9 +100,8 @@ class TagController extends BaseController
         };
         if (isset($request->folder_id)) {
             return TagController::storeForFolder($request);
-        } elseif (isset($request->bookmark_id)) {
-            return TagController::storeForBookmark($request);
         }
+        return TagController::storeForBookmark($request);
     }
 
     /* public function index(Request $request, User $user)

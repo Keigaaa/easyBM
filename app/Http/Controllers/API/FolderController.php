@@ -20,8 +20,7 @@ class FolderController extends BaseController
      */
     public function index()
     {
-        $folder = Folder::where('idOwnerFolder', '=', Auth::user()->id)->get();
-        return $this->sendResponse(FolderResource::collection($folder), 'Folder retrieved successfully');
+        return $this->sendResponse(FolderResource::collection(Folder::where('idOwnerFolder', '=', Auth::user()->id)->get()), 'Folder retrieved successfully');
     }
 
     /**
@@ -51,10 +50,8 @@ class FolderController extends BaseController
         $folder = Folder::findOrFail($id);
         if (!Gate::allows('folder_owned', $folder)) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
-        } else {
-            $folder = Folder::findOrFail($id);
-            return $this->sendResponse(new FolderResource($folder), 'Folder showed successfully');
         }
+        return $this->sendResponse(new FolderResource($folder), 'Folder showed successfully');
     }
 
     /**
@@ -68,14 +65,13 @@ class FolderController extends BaseController
     {
         if (!Gate::allows('folder_owned', $folder) && ($folder->name == 'root')) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
-        } else {
-            $input = $request->all();
-            if (isset($input['name'])) {
-                $folder->name = $request->name;
-            }
-            $folder->save();
-            return $this->sendResponse(new FolderResource($folder), 'Folder updated successfully');
         }
+        $input = $request->all();
+        if (isset($input['name'])) {
+            $folder->name = $request->name;
+        }
+        $folder->save();
+        return $this->sendResponse(new FolderResource($folder), 'Folder updated successfully');
     }
 
     /**
@@ -88,10 +84,9 @@ class FolderController extends BaseController
     {
         if (!Gate::allows('folder_owned', $folder) && ($folder->name == 'root')) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
-        } else {
-            $folder->delete();
-            return $this->sendResponse(null, 'Folder deleted successfully');
         }
+        $folder->delete();
+        return $this->sendResponse(null, 'Folder deleted successfully');
     }
 
     /**
@@ -102,8 +97,7 @@ class FolderController extends BaseController
      */
     static public function getFolder(Request $request)
     {
-        $folder = Folder::findOrFail($request->folder_id);
-        return $folder;
+        return Folder::findOrFail($request->folder_id);
     }
 
     /**

@@ -30,10 +30,11 @@ class RegisterController extends BaseController
         $input = $request->all();
         $input['password'] = bcrypt($input['password']);
         $user = User::create($input);
-        $success['token'] =  $user->createToken('MyApp')->plainTextToken; // TODO Change the name of the App
+        $success['token'] =  $user->createToken('easyBM')->plainTextToken;
         $success['name'] =  $user->name;
         return $this->sendResponse($success, 'User register successfully.');
     }
+
     /**
      * Login api.
      *
@@ -49,8 +50,7 @@ class RegisterController extends BaseController
             $success['token'] =  $user->createToken('easyBM')->plainTextToken;
             $success['name'] =  $user->name;
             return $this->sendResponse($success, 'User login successfully.');
-        } else {
-            return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
         }
+        return $this->sendError('Unauthorised.', ['error' => 'Unauthorised']);
     }
 }

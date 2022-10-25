@@ -27,9 +27,8 @@ class AdminController extends Controller
     {
         if (Auth::user()->is_admin) {
             return view('admin/index');
-        } else {
-            return "Vous devez être administrateur pour accéder à cette page !";
         }
+        return "Vous devez être administrateur pour accéder à cette page !";
     }
 
     /**
@@ -42,12 +41,10 @@ class AdminController extends Controller
      */
     public function listUser()
     {
-        $users = User::all();
         if (Auth::user()->is_admin) {
-            return view("admin/manageuser")->with('users', $users);
-        } else {
-            return "Vous devez être administrateur pour accéder à cette page !";
+            return view("admin/manageuser")->with('users', User::all());
         }
+        return "Vous devez être administrateur pour accéder à cette page !";
     }
 
     /**
@@ -61,9 +58,8 @@ class AdminController extends Controller
     {
         if (Auth::user()->is_admin) {
             return view("admin/createuser");
-        } else {
-            return "Vous devez être administrateur pour accéder à cette page !";
         }
+        return "Vous devez être administrateur pour accéder à cette page !";
     }
 
     /**
@@ -91,11 +87,10 @@ class AdminController extends Controller
 
             ])->validate();
 
-            $user = User::create(['isadmin' => false, "name" => $input['name'], "email" => $input['email'], "password" => Hash::make($input['password'])]);
+            User::create(['isadmin' => false, "name" => $input['name'], "email" => $input['email'], "password" => Hash::make($input['password'])]);
             return redirect("admin/manageuser");
-        } else {
-            return "Vous devez être administrateur pour accéder à cette page !";
         }
+        return "Vous devez être administrateur pour accéder à cette page !";
     }
 
     /**
@@ -110,17 +105,16 @@ class AdminController extends Controller
     public function deleteUser(User $user)
     {
         if (Auth::user()->is_admin) {
-            $folders = DB::table('folders')
+            DB::table('folders')
                 ->where('idOwnerFolder', '=', $user->id)
                 ->delete();
-            $bookmarks = DB::table('bookmarks')
+            DB::table('bookmarks')
                 ->where('idOwnerBookmark', '=', $user->id)
                 ->delete();
             $user->delete();
             return redirect('admin/manageuser');
-        } else {
-            return "Vous devez être administrateur pour accéder à cette page !";
         }
+        return "Vous devez être administrateur pour accéder à cette page !";
     }
 
     /**
@@ -137,8 +131,7 @@ class AdminController extends Controller
             $user->is_admin = true;
             $user->save();
             return redirect('admin/manageuser');
-        } else {
-            return "Vous devez être administrateur pour accéder à cette page  !";
         }
+        return "Vous devez être administrateur pour accéder à cette page  !";
     }
 }

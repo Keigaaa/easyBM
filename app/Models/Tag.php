@@ -39,7 +39,7 @@ class Tag extends Model
      */
     public static function existInFolder(User $user, $name)
     {
-        $existInFolder = DB::table('users')
+        return DB::table('users')
             ->join('folders', 'idOwnerFolder', '=', 'users.id')
             ->join('taggables', 'taggable_id', '=', 'folders.id')
             ->join('tags', 'tags.id', '=', 'tag_id')
@@ -47,8 +47,6 @@ class Tag extends Model
             ->where('tags.name', '=', $name)
             ->select('tags.id')
             ->get();
-
-        return $existInFolder;
     }
 
     /**
@@ -60,7 +58,7 @@ class Tag extends Model
      */
     public static function existInBookmark(User $user, $name)
     {
-        $existInBookmark = DB::table('users')
+        return DB::table('users')
             ->join('bookmarks', 'idOwnerBookmark', '=', 'users.id')
             ->join('taggables', 'taggable_id', '=', 'bookmarks.id')
             ->join('tags', 'tags.id', '=', 'tag_id')
@@ -68,8 +66,6 @@ class Tag extends Model
             ->where('tags.name', '=', $name)
             ->select('tags.id')
             ->get();
-
-        return $existInBookmark;
     }
 }
 

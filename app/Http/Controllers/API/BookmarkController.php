@@ -18,8 +18,7 @@ class BookmarkController extends BaseController
      */
     public function index()
     {
-        $bookmark = Bookmark::where('idOwnerBookmark', '=', Auth::user()->id)->get();
-        return $this->sendResponse(BookmarkResource::collection($bookmark), 'Bookmark retrieved successfully');
+        return $this->sendResponse(BookmarkResource::collection(Bookmark::where('idOwnerBookmark', '=', Auth::user()->id)->get()), 'Bookmark retrieved successfully');
     }
 
     /**
@@ -51,9 +50,8 @@ class BookmarkController extends BaseController
         $bookmark = Bookmark::findOrFail($id);
         if (!Gate::allows('bookmark_owned', $bookmark)) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
-        } else {
-            return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark showed successfully');
         }
+        return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark showed successfully');
     }
 
     /**
@@ -67,20 +65,19 @@ class BookmarkController extends BaseController
     {
         if (!Gate::allows('bookmark_owned', $bookmark)) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
-        } else {
-            $input = $request->all();
-            if (isset($input['name'])) {
-                $bookmark->name = $request->name;
-            }
-            if (isset($input['url'])) {
-                $bookmark->url = $request->url;
-            }
-            if (isset($input['commentary'])) {
-                $bookmark->commentary = $request->commentary;
-            }
-            $bookmark->save();
-            return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark updated successfully');
         }
+        $input = $request->all();
+        if (isset($input['name'])) {
+            $bookmark->name = $request->name;
+        }
+        if (isset($input['url'])) {
+            $bookmark->url = $request->url;
+        }
+        if (isset($input['commentary'])) {
+            $bookmark->commentary = $request->commentary;
+        }
+        $bookmark->save();
+        return $this->sendResponse(new BookmarkResource($bookmark), 'Bookmark updated successfully');
     }
 
     /**
@@ -93,10 +90,9 @@ class BookmarkController extends BaseController
     {
         if (!Gate::allows('bookmark_owned', $bookmark)) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
-        } else {
-            $bookmark->delete();
-            return $this->sendResponse(null, 'Bookmark deleted successfully');
         }
+        $bookmark->delete();
+        return $this->sendResponse(null, 'Bookmark deleted successfully');
     }
 
     /**
@@ -107,7 +103,6 @@ class BookmarkController extends BaseController
      */
     static public function getBookmark(Request $request)
     {
-        $bookmark = Bookmark::findOrFail($request->bookmark_id);
-        return $bookmark;
+        return Bookmark::findOrFail($request->bookmark_id);
     }
 }
