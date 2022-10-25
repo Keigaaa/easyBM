@@ -40,5 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::controller(TagController::class)->group(function () {
         Route::post('tag', 'storeforfolder');
+        Route::post('tag', 'storeforbookmark');
     });
 });

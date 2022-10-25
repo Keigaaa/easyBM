@@ -25,6 +25,17 @@ class TagController extends BaseController
     }
 
     /**
+     * Check if no IDs is sent as parameter.
+     *
+     * @param Request $request
+     * @return boolean
+     */
+    public function isNoId(Request $request)
+    {
+        return (!isset($request->folder_id)) && (!isset($request->bookmark_id));
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -32,7 +43,7 @@ class TagController extends BaseController
      */
     public function storeForFolder(Request $request)
     {
-        if (TagController::isDoubleId($request)) {
+        if (TagController::isDoubleId($request) || (TagController::isNoId($request))) {
             return $this->sendError(null, 'Bad request.', 400);
         };
 
@@ -52,6 +63,35 @@ class TagController extends BaseController
             } else {
                 return $this->sendError(null, 'Bad request.', 400);
             }
+        } else {
+            return $this->sendError(null, 'Bad request.', 400);
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeForBookmark(Request $request)
+    {
+        if (TagController::isDoubleId($request) || (TagController::isNoId($request))) {
+            return $this->sendError(null, 'Bad request.', 400);
+        };
+
+        $bookmark = BookmarkController::getBookmark($request);
+        $tag = Tag::existInBookmark(Auth::user(), $request->name);
+
+        if (!$tag->isEmpty()) {
+            $tag = Tag::findOrFail($tag->first()->id);
+            $bookmark->tags()->save($tag);
+            return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
+        } elseif (BookmarkController::getBookmark($request)) {
+            $tag = new Tag();
+            $tag->name = $request->name;
+            $bookmark->tags()->save($tag);
+            return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
         } else {
             return $this->sendError(null, 'Bad request.', 400);
         }
