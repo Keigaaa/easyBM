@@ -37,7 +37,7 @@ class Tag extends Model
      * @param [string] $name
      * @return object
      */
-    public static function existInFolder($user, $name)
+    public static function existInFolder(User $user, $name)
     {
         $existInFolder = DB::table('users')
             ->join('folders', 'idOwnerFolder', '=', 'users.id')
@@ -58,7 +58,7 @@ class Tag extends Model
      * @param [string] $name
      * @return object
      */
-    public static function existInBookmark($user, $name)
+    public static function existInBookmark(User $user, $name)
     {
         $existInBookmark = DB::table('users')
             ->join('bookmarks', 'idOwnerBookmark', '=', 'users.id')

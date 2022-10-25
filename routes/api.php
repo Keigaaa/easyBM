@@ -35,11 +35,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiresources([
         'folder' => FolderController::class,
     ]);
-});
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::controller(TagController::class)->group(function () {
-        Route::post('tag', 'storeforfolder');
-        Route::post('tag', 'storeforbookmark');
-    });
+    Route::apiresources([
+        'tag' => TagController::class,
+    ]);
 });
