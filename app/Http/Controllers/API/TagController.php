@@ -157,4 +157,25 @@ class TagController extends BaseController
     {
         return TagController::indexForFolder()->merge(TagController::indexForBookmark());
     }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Bookmark  $bookmark
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, Tag $tag)
+    {
+        if (TagController::index()->contains($tag)) {
+            $tag->name = $request->name;
+            $tag->save();
+            return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
+        }
+        return $this->sendError(null, 'Unauthorized resource.', 404);
+    }
+
+    public function destroy(Tag $tag)
+    {
+    }
 }

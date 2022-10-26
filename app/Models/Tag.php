@@ -68,19 +68,3 @@ class Tag extends Model
             ->get();
     }
 }
-
-    /*public static function tag_owned($user, $tag)
-    {
-        $userTag = DB::table('users')
-            ->join('folders', 'idOwnerFolder', '=', 'users.id')
-            ->join('taggables', 'taggable_id', '=', 'folders.id')
-            ->join('tags', 'tags.id', '=', 'tag_id')
-            ->where('idOwnerFolder', '=', $user->id)
-            ->where('tags.name', '=', $tag->name)
-            ->select('tag_id')
-            ->get();
-
-        return $userTag;
-
-        // casser l'associùation du tag dans taggable
-    }*/
