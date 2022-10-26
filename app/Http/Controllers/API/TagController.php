@@ -104,13 +104,57 @@ class TagController extends BaseController
         return TagController::storeForBookmark($request);
     }
 
-    /* public function index(Request $request, User $user)
+    /**
+     * Display a listing of the resource,
+     * tags in folders.
+     *
+     * @return collection
+     */
+    public function indexForFolder()
     {
-        $tagsFolder = DB::table('users')
+        $tagsId =  DB::table('users')
             ->join('folders', 'idOwnerFolder', '=', 'users.id')
             ->join('taggables', 'taggable_id', '=', 'folders.id')
             ->join('tags', 'tags.id', '=', 'tag_id')
-            ->where('idOwnerFolder', '=', $user->id)
+            ->where('idOwnerFolder', '=', Auth::user()->id)
+            ->where('taggable_type', '=', 'App\Models\Folder')
+            ->select('tag_id')
+            ->distinct()
             ->get();
-    }*/
+
+        $tagsValue = json_decode(json_encode($tagsId), true);
+        return Tag::findMany($tagsValue);
+    }
+
+    /**
+     * Display a listing of the resource,
+     * tags in bookmarks.
+     *
+     * @return collection
+     */
+    public function indexForBookmark()
+    {
+        $tagsId =  DB::table('users')
+            ->join('bookmarks', 'idOwnerBookmark', '=', 'users.id')
+            ->join('taggables', 'taggable_id', '=', 'bookmarks.id')
+            ->join('tags', 'tags.id', '=', 'tag_id')
+            ->where('idOwnerBookmark', '=', Auth::user()->id)
+            ->where('taggable_type', '=', 'App\Models\Bookmark')
+            ->select('tag_id')
+            ->distinct()
+            ->get();
+
+        $tagsValue = json_decode(json_encode($tagsId), true);
+        return Tag::findMany($tagsValue);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return collection
+     */
+    public function index()
+    {
+        return TagController::indexForFolder()->merge(TagController::indexForBookmark());
+    }
 }

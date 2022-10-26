@@ -35,7 +35,7 @@ class Tag extends Model
      *
      * @param [User] $user
      * @param [string] $name
-     * @return object
+     * @return collection
      */
     public static function existInFolder(User $user, $name)
     {
@@ -54,7 +54,7 @@ class Tag extends Model
      *
      * @param [User] $user
      * @param [string] $name
-     * @return object
+     * @return collection
      */
     public static function existInBookmark(User $user, $name)
     {
