@@ -172,7 +172,7 @@ class TagController extends BaseController
             $tag->save();
             return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
         }
-        return $this->sendError(null, 'Unauthorized resource.', 404);
+        return $this->sendError(null, 'Unauthorized resource.', 403);
     }
 
     public function destroy(Tag $tag)
