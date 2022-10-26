@@ -49,6 +49,13 @@ class Handler extends ExceptionHandler
         });
     }
 
+    /**
+     * Return JSON for error and response as execption.
+     *
+     * @param [type] $request
+     * @param Throwable $exception
+     * @return JSON
+     */
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof ModelNotFoundException && $request->wantsJson()) {

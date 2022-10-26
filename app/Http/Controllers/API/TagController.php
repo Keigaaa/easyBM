@@ -177,5 +177,14 @@ class TagController extends BaseController
 
     public function destroy(Tag $tag)
     {
+        DB::table('taggables')
+            ->join('tags', 'tags.id', '=', 'tag_id')
+            ->where('tag_id', '=', $tag->id)
+            ->get()->dd();
+
+
+        /*if(TagController::index()->contains($tag) {
+        })*/
+        return $this->sendError(null, 'Unauthorized resource.', 403);
     }
 }
