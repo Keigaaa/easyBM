@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Validator;
 
 class TagController extends BaseController
 {
@@ -95,6 +96,15 @@ class TagController extends BaseController
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:tags|max:255',
+            'folder_id' => 'integer|nullable',
+            'bookmark' => 'integer|nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation Error.", $validator->errors());
+        }
         if (TagController::isDoubleId($request) || (TagController::isNoId($request))) {
             return $this->sendError(null, 'Bad request.', 400);
         };
@@ -167,6 +177,15 @@ class TagController extends BaseController
      */
     public function update(Request $request, Tag $tag)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|unique:tags|max:255',
+            'folder_id' => 'integer|nullable',
+            'bookmark' => 'integer|nullable',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation Error.", $validator->errors());
+        }
         if (TagController::index()->contains($tag)) {
             $tag->name = $request->name;
             $tag->save();
