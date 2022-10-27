@@ -34,7 +34,7 @@ class FolderController extends BaseController
         $folder = new Folder();
         $folder->owner()->associate(Auth::user());
         $folder->name = $request->name;
-        $folder->idParent = $request->idParent;
+        $folder->idParent = FolderController::getRoot($request);
         $folder->save();
         return $this->sendResponse(new FolderResource($folder), 'Folder created successfully');
     }
@@ -63,7 +63,8 @@ class FolderController extends BaseController
      */
     public function update(Request $request, Folder $folder)
     {
-        if (!Gate::allows('folder_owned', $folder) && ($folder->name == 'root')) {
+
+        if (!Gate::allows('folder_owned', $folder) && (FolderController::getRoot($request) === $request->id)) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
         }
         $input = $request->all();
@@ -107,9 +108,9 @@ class FolderController extends BaseController
      */
     static public function getRoot(Request $request)
     {
-        $root = DB::table('folders')
-            ->where('name', '=', 'root')
-            ->get();
-        return $root->first()->id;
+        return  DB::table('folders')
+            ->where('idOwnerFolder', '=', Auth::user()->id)
+            ->whereNull('idParent')
+            ->get()->first()->id;
     }
 }
