@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class FolderController extends BaseController
 {
@@ -31,6 +32,14 @@ class FolderController extends BaseController
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation Error.", $validator->errors());
+        }
+
         $folder = new Folder();
         $folder->owner()->associate(Auth::user());
         $folder->name = $request->name;
@@ -63,6 +72,13 @@ class FolderController extends BaseController
      */
     public function update(Request $request, Folder $folder)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation Error.", $validator->errors());
+        }
 
         if (!Gate::allows('folder_owned', $folder) && (FolderController::getRoot($request) === $request->id)) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
