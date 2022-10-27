@@ -8,6 +8,7 @@ use App\Models\Bookmark;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class BookmarkController extends BaseController
 {
@@ -29,6 +30,17 @@ class BookmarkController extends BaseController
      */
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|max:255',
+            'url' => 'required|max:255|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+            'commentary' => 'string|nullable|max:255',
+            'idFolder' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation Error.", $validator->errors());
+        }
+
         $bookmark = new Bookmark();
         $bookmark->owner()->associate(Auth::user());
         $bookmark->name = $request->name;
@@ -63,6 +75,16 @@ class BookmarkController extends BaseController
      */
     public function update(Request $request, Bookmark $bookmark)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:255',
+            'url' => 'url|max:255|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+            'commentary' => 'string|nullable|max:255',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError("Validation Error.", $validator->errors());
+        }
+
         if (!Gate::allows('bookmark_owned', $bookmark)) {
             return $this->sendError(null, 'Unauthorized resource.', 403);
         }
