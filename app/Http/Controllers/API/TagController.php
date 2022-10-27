@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 
+use function PHPUnit\Framework\isNull;
+
 class TagController extends BaseController
 {
 
@@ -39,29 +41,35 @@ class TagController extends BaseController
     }
 
     /**
-     * Store a newly created resource in storage,
-     * a tag for folder.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * Check if tag is in Bookmark
+     * @param [tag] tag
+     * @param [bookmark] bookmark
+     * @return boolean if exist in bookmark
      */
-    public function storeForFolder(Request $request)
+    public function isTagIsInBookmark($tag, $bookmark)
     {
-        $folder = FolderController::getFolder($request);
-        $tag = Tag::existInFolder(Auth::user(), $request->name);
-        if (FolderController::getRoot($request) !== $request->folder_id) {
-            if (!$tag->isEmpty()) {
-                $tag = Tag::findOrFail($tag->first()->id);
-                $folder->tags()->save($tag);
-                return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
-            } elseif (FolderController::getFolder($request)) {
-                $tag = new Tag();
-                $tag->name = $request->name;
-                $folder->tags()->save($tag);
-                return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
-            }
+        $tagsInBookmark = $bookmark->tags()->get();
+        foreach ($tagsInBookmark as &$tagBookMark) {
+            if ($tagBookMark->id == $tag->id)
+                return true;
         }
-        return $this->sendError(null, 'Bad request.', 400);
+        return false;
+    }
+
+    /**
+     * Check if tag is in Folder
+     * @param [tag] tag
+     * @param [folder] folder
+     * @return boolean if exist in folder
+     */
+    public function isTagIsInFolder($tag, $folder)
+    {
+        $tagsInFolder = $folder->tags()->get();
+        foreach ($tagsInFolder as &$tagFolder) {
+            if ($tagFolder->id == $tag->id)
+                return true;
+        }
+        return false;
     }
 
     /**
@@ -74,16 +82,45 @@ class TagController extends BaseController
     public function storeForBookmark(Request $request)
     {
         $bookmark = BookmarkController::getBookmark($request);
-        $tag = Tag::existInBookmark(Auth::user(), $request->name);
-        if (!$tag->isEmpty()) {
-            $tag = Tag::findOrFail($tag->first()->id);
-            $bookmark->tags()->save($tag);
-            return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
-        } elseif (BookmarkController::getBookmark($request)) {
+        $tag = Tag::findByName($request->name);
+        if ($tag == null) {
             $tag = new Tag();
             $tag->name = $request->name;
             $bookmark->tags()->save($tag);
             return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
+        } else {
+            if ($this->isTagIsInBookmark($tag, $bookmark)) {
+                return $this->sendResponse(new TagResource($tag), "Tag already exist in Bookmark");
+            } else {
+                $bookmark->tags()->save($tag);
+                return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
+            }
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage,
+     * a tag for folder.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function storeForFolder(Request $request)
+    {
+        $folder = FolderController::getFolder($request);
+        $tag = Tag::findByName($request->name);
+        if ($tag == null) {
+            $tag = new Tag();
+            $tag->name = $request->name;
+            $folder->tags()->save($tag);
+            return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
+        } else {
+            if ($this->isTagIsInFolder($tag, $folder)) {
+                return $this->sendResponse(new TagResource($tag), "Tag already exist in Folder");
+            } else {
+                $folder->tags()->save($tag);
+                return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
+            }
         }
     }
 
@@ -97,9 +134,9 @@ class TagController extends BaseController
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'name' => 'required|unique:tags|max:255',
+            'name' => 'required|max:255',
             'folder_id' => 'integer|nullable',
-            'bookmark' => 'integer|nullable',
+            'bookmark_id' => 'integer|nullable',
         ]);
 
         if ($validator->fails()) {
@@ -194,7 +231,7 @@ class TagController extends BaseController
         return $this->sendError(null, 'Unauthorized resource.', 403);
     }
 
-    public function destroy(Tag $tag)
+    /*public function destroy(Tag $tag)
     {
         DB::table('taggables')
             ->join('tags', 'tags.id', '=', 'tag_id')
@@ -202,7 +239,7 @@ class TagController extends BaseController
             ->get()->dd();
 
         /*if(TagController::index()->contains($tag) {
-        })*/
+        })
         return $this->sendError(null, 'Unauthorized resource.', 403);
-    }
+    }*/
 }

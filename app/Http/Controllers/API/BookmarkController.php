@@ -32,7 +32,7 @@ class BookmarkController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
-            'url' => 'required|max:255|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
+            'url' => 'url|max:255|regex:/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/',
             'commentary' => 'string|nullable|max:255',
             'idFolder' => 'required|integer',
         ]);

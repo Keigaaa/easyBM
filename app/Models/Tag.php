@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class Tag extends Model
 {
@@ -30,41 +31,17 @@ class Tag extends Model
         return $this->morphedByMany(Bookmark::class, 'taggable');
     }
 
-    /**
-     * Checks if a tag already exists in a folder with the same name and returns it.
-     *
-     * @param [User] $user
-     * @param [string] $name
-     * @return collection
-     */
-    public static function existInFolder(User $user, $name)
-    {
-        return DB::table('users')
-            ->join('folders', 'idOwnerFolder', '=', 'users.id')
-            ->join('taggables', 'taggable_id', '=', 'folders.id')
-            ->join('tags', 'tags.id', '=', 'tag_id')
-            ->where('idOwnerFolder', '=', $user->id)
-            ->where('tags.name', '=', $name)
-            ->select('tags.id')
-            ->get();
-    }
 
     /**
-     * Checks if a tag already exists in a bookmark with the same name and returns it.
-     *
-     * @param [User] $user
-     * @param [string] $name
-     * @return collection
+     * Find tag by name
+     * @param [string] $tagName
+     * @return [Tag] Tag if found else return null
      */
-    public static function existInBookmark(User $user, $name)
+    public static function findByName($tagName)
     {
-        return DB::table('users')
-            ->join('bookmarks', 'idOwnerBookmark', '=', 'users.id')
-            ->join('taggables', 'taggable_id', '=', 'bookmarks.id')
-            ->join('tags', 'tags.id', '=', 'tag_id')
-            ->where('idOwnerBookmark', '=', $user->id)
-            ->where('tags.name', '=', $name)
-            ->select('tags.id')
+        $result = Tag::where('name', '=', $tagName)
             ->get();
+
+        return ($result->isEmpty()) ? null : $result->first();
     }
 }
