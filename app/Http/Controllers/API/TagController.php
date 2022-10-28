@@ -238,7 +238,7 @@ class TagController extends BaseController
             ->where('tag_id', '=', $tag->id)
             ->get()->dd();
 
-        /*if(TagController::index()->contains($tag) {
+        if(TagController::index()->contains($tag) {
         })
         return $this->sendError(null, 'Unauthorized resource.', 403);
     }*/

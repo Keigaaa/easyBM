@@ -35,8 +35,48 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiresources([
         'folder' => FolderController::class,
     ]);
-
-    Route::apiresources([
-        'tag' => TagController::class,
-    ]);
+    Route::apiResource('tag', TagController::class,  ['only' => ['index', 'show', 'store', 'update']]);
 });
+
+Route::delete('bookmark/id/tags/id');
+Route::delete('folder/id/tags/id');
+
+Route::get('bookmark/id/tags');
+Route::get('folder/id/tags');
+/*
+/// DONE 
+- Commenter toutes les fonctions
+	- Models :
+		- bookmark
+		- folder
+		- tag
+		- user
+- Can't destroy root folder and can't tag him
+- Fix tag store fonctionnality
+- Error when no id is paced in the body
+- Codes d'erreurs à vérifier
+- Renvoie en JSON
+- validator for :
+	- bookmark store
+	- bookmark update
+	- folder store
+	- folder update
+	- tag store
+	- tag update
+- can't create two tags with same name on same taggables
+- for root problem -> idparent  = null
+///
+
+- CRUD for tags
+	- Index /// DONE
+	- Update /// DONE
+	- Destroy
+- function "Search"
+- function "Content" for folder
+- générer doc postman
+- doc github a écrire
+- fix can't attach 2 times a same tags on the same taggable
+- check where the function are and her relation (cohérence)
+
+
+/// exist in change , need to attach tag_id and taggable_id*/
