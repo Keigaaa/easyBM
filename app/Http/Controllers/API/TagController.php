@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 use function PHPUnit\Framework\isNull;
@@ -90,7 +91,7 @@ class TagController extends BaseController
             return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
         } else {
             if ($this->isTagIsInBookmark($tag, $bookmark)) {
-                return $this->sendResponse(new TagResource($tag), "Tag already exist in Bookmark");
+                return $this->sendError(null, "Tag already exist in Bookmark", 403);
             } else {
                 $bookmark->tags()->save($tag);
                 return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
@@ -116,7 +117,7 @@ class TagController extends BaseController
             return $this->sendResponse(new TagResource($tag), 'Tag created successfully');
         } else {
             if ($this->isTagIsInFolder($tag, $folder)) {
-                return $this->sendResponse(new TagResource($tag), "Tag already exist in Folder");
+                return $this->sendError(null, "Tag already exist in Folder", 403);
             } else {
                 $folder->tags()->save($tag);
                 return $this->sendResponse(new TagResource($tag), 'Tag updated successfully');
@@ -157,7 +158,7 @@ class TagController extends BaseController
      *
      * @return collection
      */
-    public function indexForFolder()
+    static public function indexForFolder()
     {
         $tagsId =  DB::table('users')
             ->join('folders', 'idOwnerFolder', '=', 'users.id')
@@ -179,7 +180,7 @@ class TagController extends BaseController
      *
      * @return collection
      */
-    public function indexForBookmark()
+    static public function indexForBookmark()
     {
         $tagsId =  DB::table('users')
             ->join('bookmarks', 'idOwnerBookmark', '=', 'users.id')
@@ -200,7 +201,7 @@ class TagController extends BaseController
      *
      * @return collection
      */
-    public function index()
+    static public function index()
     {
         return TagController::indexForFolder()->merge(TagController::indexForBookmark());
     }
@@ -230,16 +231,4 @@ class TagController extends BaseController
         }
         return $this->sendError(null, 'Unauthorized resource.', 403);
     }
-
-    /*public function destroy(Tag $tag)
-    {
-        DB::table('taggables')
-            ->join('tags', 'tags.id', '=', 'tag_id')
-            ->where('tag_id', '=', $tag->id)
-            ->get()->dd();
-
-        if(TagController::index()->contains($tag) {
-        })
-        return $this->sendError(null, 'Unauthorized resource.', 403);
-    }*/
 }

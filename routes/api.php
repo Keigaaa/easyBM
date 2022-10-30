@@ -19,30 +19,38 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::controller(RegisterController::class)->group(function () {
-    Route::post('register', 'register');
-    Route::post('login', 'login');
+	Route::post('register', 'register');
+	Route::post('login', 'login');
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+	return $request->user();
+});
+
+
+Route::middleware('auth:sanctum')->group(function () {
+	Route::controller(FolderController::class)->group(function () {
+		Route::delete('folder/{folder}/tag/{tag}', 'destroyforfolder');
+	});
+	Route::controller(BookmarkController::class)->group(function () {
+		Route::delete('bookmark/{bookmark}/tag/{tag}', 'destroyforbookmark');
+	});
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiresources([
-        'bookmark' => BookmarkController::class,
-    ]);
+	Route::apiresources([
+		'bookmark' => BookmarkController::class,
+	]);
 
-    Route::apiresources([
-        'folder' => FolderController::class,
-    ]);
-    Route::apiResource('tag', TagController::class,  ['only' => ['index', 'show', 'store', 'update']]);
+	Route::apiresources([
+		'folder' => FolderController::class,
+	]);
+	Route::apiResource('tag', TagController::class,  ['only' => ['index', 'show', 'store', 'update']]);
 });
 
-Route::delete('bookmark/id/tags/id');
-Route::delete('folder/id/tags/id');
 
-Route::get('bookmark/id/tags');
-Route::get('folder/id/tags');
+/*Route::get('bookmark/id/tags');
+Route::get('folder/id/tags');*/
 /*
 /// DONE 
 - Commenter toutes les fonctions

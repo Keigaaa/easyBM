@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Tag;
 
 class BookmarkController extends BaseController
 {
@@ -126,5 +127,21 @@ class BookmarkController extends BaseController
     static public function getBookmark(Request $request)
     {
         return Bookmark::findOrFail($request->bookmark_id);
+    }
+
+    /**
+     * Remove a tag from a bookmark.
+     *
+     * @param \App\Models\Bookmark $bookmark
+     * @param \App\Models\Tag $tag
+     * @return \Illuminate\Http\Response
+     */
+    public function destroyForBookmark(Bookmark $bookmark, Tag $tag)
+    {
+        if (TagController::index()->contains($tag)) {
+            $bookmark->tags()->detach($tag);
+            return $this->sendResponse(null, 'Tag deleted successfully');
+        };
+        return $this->sendError(null, 'Unauthorized resource.', 403);
     }
 }

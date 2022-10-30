@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use App\Models\Tag;
 
 class FolderController extends BaseController
 {
@@ -128,5 +129,21 @@ class FolderController extends BaseController
             ->where('idOwnerFolder', '=', Auth::user()->id)
             ->whereNull('idParent')
             ->get()->first()->id;
+    }
+
+    /**
+     * Remove a tag from a folder.
+     *
+     * @param \App\Models\Folder $folder
+     * @param \App\Models\Tag $tag
+     * @return \Illuminate\Http\Response
+     */
+    public function destroyForFolder(Folder $folder, Tag $tag)
+    {
+        if (TagController::index()->contains($tag)) {
+            $folder->tags()->detach($tag);
+            return $this->sendResponse(null, 'Tag deleted successfully');
+        };
+        return $this->sendError(null, 'Unauthorized resource.', 403);
     }
 }
