@@ -31,10 +31,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::middleware('auth:sanctum')->group(function () {
 	Route::controller(FolderController::class)->group(function () {
 		Route::delete('folder/{folder}/tag/{tag}', 'destroyforfolder');
+		Route::get('{folder}/content/bookmark', 'bookmarkinfolder');
+		Route::get('{folder}/content/folder', 'folderinfolder');
+		Route::get('{folder}/content', 'content');
 	});
-	Route::controller(BookmarkController::class)->group(function () {
-		Route::delete('bookmark/{bookmark}/tag/{tag}', 'destroyforbookmark');
-	});
+});
+Route::controller(BookmarkController::class)->group(function () {
+	Route::delete('bookmark/{bookmark}/tag/{tag}', 'destroyforbookmark');
 });
 
 Route::middleware('auth:sanctum')->group(function () {

@@ -35,6 +35,7 @@ class FolderController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
+            'idParent' => 'integer'
         ]);
 
         if ($validator->fails()) {
@@ -44,7 +45,7 @@ class FolderController extends BaseController
         $folder = new Folder();
         $folder->owner()->associate(Auth::user());
         $folder->name = $request->name;
-        $folder->idParent = FolderController::getRoot($request);
+        $folder->idParent = $request->idParent;
         $folder->save();
         return $this->sendResponse(new FolderResource($folder), 'Folder created successfully');
     }
@@ -75,6 +76,7 @@ class FolderController extends BaseController
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|max:255',
+            'idParent' => 'integer|nullable'
         ]);
 
         if ($validator->fails()) {
@@ -87,6 +89,9 @@ class FolderController extends BaseController
         $input = $request->all();
         if (isset($input['name'])) {
             $folder->name = $request->name;
+        }
+        if (isset($input['idParent'])) {
+            $folder->idParent = $request->idParent;
         }
         $folder->save();
         return $this->sendResponse(new FolderResource($folder), 'Folder updated successfully');
@@ -145,5 +150,37 @@ class FolderController extends BaseController
             return $this->sendResponse(null, 'Tag deleted successfully');
         };
         return $this->sendError(null, 'Unauthorized resource.', 403);
+    }
+    /**
+     * Display a listing of the resource,
+     * bookmarks in folders.
+     *
+     * @param \App\Models\Folder $folder
+     * @return collection
+     */
+    public function bookmarkInFolder(Folder $folder)
+    {
+        return DB::table('bookmarks')
+            ->where('idFolder', '=', $folder->id)
+            ->get();
+    }
+
+    /**
+     *  Display a listing of the resource,
+     * folders in folders.
+     *
+     * @param \App\Models\Folder $folder
+     * @return collection
+     */
+    public function folderInFolder(Folder $folder)
+    {
+        return DB::table('folders')
+            ->where('idParent', '=', $folder->id)
+            ->get();
+    }
+
+    public function content(Folder $folder)
+    {
+        return 'Folders :<br>' . FolderController::folderInFolder($folder) . '<br>Bookmarks :<br>' . (FolderController::bookmarkInFolder($folder));
     }
 }
