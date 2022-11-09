@@ -4,6 +4,7 @@ use App\Http\Controllers\API\FolderController;
 use App\Http\Controllers\API\BookmarkController;
 use App\Http\Controllers\API\RegisterController;
 use App\Http\Controllers\API\TagController;
+use App\Http\Controllers\API\SearchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -36,6 +37,13 @@ Route::middleware('auth:sanctum')->group(function () {
 		Route::get('{folder}/content', 'content');
 	});
 });
+
+Route::middleware('auth:sanctum')->group(function () {
+	Route::controller(SearchController::class)->group(function () {
+		Route::get('search/{search}', 'searchAll');
+	});
+});
+
 Route::controller(BookmarkController::class)->group(function () {
 	Route::delete('bookmark/{bookmark}/tag/{tag}', 'destroyforbookmark');
 });
