@@ -37,18 +37,32 @@ class FolderController extends BaseController
             'name' => 'required|max:255',
             'idParent' => 'integer'
         ]);
-
         if ($validator->fails()) {
             return $this->sendError("Validation Error.", $validator->errors());
         }
-
         $folder = new Folder();
+        $idParents = (FolderController::getIdParent());
+        $idP = true;
+        foreach ($idParents as $idParent) {
+            if (($idParent != $request->idParent)) {
+                $idP = false;
+            } else {
+                $idP = true;
+                break;
+            }
+        }
+        if ($idP == false) {
+            return $this->sendError("Validation Error.", $validator->errors());
+        } else {
+            $folder->idParent = $idParent;
+        }
         $folder->owner()->associate(Auth::user());
         $folder->name = $request->name;
-        $folder->idParent = $request->idParent;
         $folder->save();
         return $this->sendResponse(new FolderResource($folder), 'Folder created successfully');
     }
+
+
 
     /**
      * Display the specified resource.
@@ -182,5 +196,25 @@ class FolderController extends BaseController
     public function content(Folder $folder)
     {
         return 'Folders :<br>' . FolderController::folderInFolder($folder) . '<br>Bookmarks :<br>' . (FolderController::bookmarkInFolder($folder));
+    }
+
+    /**
+     * Return the idParent of all folders of the user
+     *
+     * @return collection
+     */
+    public function getIdParent()
+    {
+        $parents =  DB::table('folders')
+            ->where('idOwnerFolder', '=', Auth::user()->id)
+            ->get();
+
+        $idParents = [];
+
+        foreach ($parents as $parent) {
+            array_push($idParents, $parent->id);
+        }
+
+        return $idParents;
     }
 }

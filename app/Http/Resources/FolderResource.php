@@ -19,6 +19,8 @@ class FolderResource extends JsonResource
             'name' => $this->name,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
+            'idParent' => $this->idParent,
+            'idOwnerFolder' => $this->idOwnerFolder
         ];
     }
 }
